@@ -1,0 +1,41 @@
+id,code,category,parent_id,tags
+1,G,Giving,0,give
+2,T,Tithing,1,church
+3,C,Charitable,1,give
+4,M,Monthly,0,
+5,MM,Mortage,4,home
+6,P,Phone,4,util
+7,MC,Cable / Internet,4,util
+8,E,Entergy,4,home
+9,W,Water,4,home
+10,PC,Pest Control,4,util
+11,ED,Everyday,0,
+12,EG,Groceries,12,food
+13,F,Fuel,12,car
+14,R,Restaurants,12,food|extra
+15,MED,Medical,12,health
+16,CO,Clothing,12,living|
+17,HO,Household Goods,13,living|stuff|extra
+18,MIS,Misc,13,stuff
+19,CF,Coffee,13,living|extra
+20,ENT,Entertainment,13,living|extra
+21,ACT,Activities,13,living|extra|kids
+22,SS,Software Subscriptions,13,living|extra
+23,GG,Garbage,13,house|living
+24,RD,Rainy Day,0,save|future|plan
+25,EF,Emergency Fund,24,save
+26,CR,Car Repair,24,car
+27,HM,Home Maintenance,24,home|fix
+28,CI,Car Insurance,24,car|living
+29,I,Insurance Health/Life,24,health|future
+30,HB,Holiday/Birthday,24,living|kids|family|stuff
+31,L,License,24,living|work|car
+32,TAX,Taxes,24,living
+33,S,Savings,0,save
+34,CR,Car Replacement,33,car|save|work
+35,V,Vacation,33,save|fun|family
+36,INV,Invest,33,save|grow|family|future
+37,D,Debt,0,zero
+38,CP,Car Payment,37,car|loan|debt
+39,LP,Loan Payment,37,loan|debt
+40,CC,Credit Card,37,loan|debt
