@@ -13,18 +13,17 @@ the following shortcuts can be used:
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"strconv"
 
-	"code.rocketnine.space/tslocum/cview"
+	// "code.rocketnine.space/tslocum/cview"
 	"github.com/drewart/dough/data"
 	"github.com/gdamore/tcell/v2"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rivo/tview"
 )
 
 const (
@@ -39,101 +38,114 @@ const (
 // Slide is a function which returns the slide's title, any applicable
 // information and its main primitive, its. It receives a "nextSlide" function
 // which can be called to advance the presentation to the next slide.
-type Page func(nextPage func()) (title string, info string, content cview.Primitive)
+type Page func(nextPage func()) (title string, info string, content tview.Primitive)
 
 // The application.
-var app = cview.NewApplication()
+var app = tview.NewApplication()
 
 func InitDatabase() {
 	data.InitSchema(nil)
 }
 
 func SetupLogger() {
-	logFile, err := os.OpenFile("dough.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	logFile, err := os.OpenFile("dough.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error open: %v ", err)
 	}
 	defer logFile.Close()
 
 	log.SetOutput(logFile)
+	log.Println("Logging Setup for dough")
 }
 
 // Starting point for the presentation.
 func main() {
 	SetupLogger()
-	defer app.HandlePanic()
+	//defer app.
 
-	var debugPort int
-	flag.IntVar(&debugPort, "debug", 0, "port to serve debug info")
-	flag.Parse()
-
-	if debugPort > 0 {
-		go func() {
-			log.Fatal(http.ListenAndServe(fmt.Sprintf("localhost:%d", debugPort), nil))
-		}()
-	}
-
-	app.EnableMouse(true)
-
-	// The presentation slides.
 	slides := []Page{
 		Accounts,
+		PickFileView,
+		Transactions,
 		Table,
 		Form,
+		CatagoryReview,
 	}
 
-	panels := cview.NewTabbedPanels()
+	pages := tview.NewPages()
+
+	//panels := NewTabbedPanels()
+
+	// The bottom row has some info on where we are.
+	info := tview.NewTextView().
+		SetDynamicColors(true).
+		SetRegions(true).
+		SetWrap(false).
+		SetHighlightedFunc(func(added, removed, remaining []string) {
+			if len(added) == 0 {
+				return
+			}
+
+			pages.SwitchToPage(added[0])
+		})
+
+	//subInfo := tview.NewTextView().SetWrap(false)
 
 	// Create the pages for all slides.
 	previousSlide := func() {
-		slide, _ := strconv.Atoi(panels.GetCurrentTab())
+		slide, _ := strconv.Atoi(info.GetHighlights()[0])
 		slide = (slide - 1 + len(slides)) % len(slides)
-		panels.SetCurrentTab(strconv.Itoa(slide))
+		//panels.SetCurrentTab(strconv.Itoa(slide))
+		info.Highlight(strconv.Itoa(slide)).
+			ScrollToHighlight()
 	}
 	nextSlide := func() {
-		slide, _ := strconv.Atoi(panels.GetCurrentTab())
+		slide, _ := strconv.Atoi(info.GetHighlights()[0])
 		slide = (slide + 1) % len(slides)
-		panels.SetCurrentTab(strconv.Itoa(slide))
+		//panels.SetCurrentTab(strconv.Itoa(slide))
+		info.Highlight(strconv.Itoa(slide)).
+			ScrollToHighlight()
 	}
-
-	cursor := 0
-	var slideRegions []int
 	for index, slide := range slides {
-		slideRegions = append(slideRegions, cursor)
-
-		title, info, primitive := slide(nextSlide)
-
-		h := cview.NewTextView()
-		if info != "" {
+		title, slideInfo, primitive := slide(nextSlide)
+		h := tview.NewTextView()
+		if slideInfo != "" {
 			h.SetDynamicColors(true)
-			h.SetText("  [" + cview.ColorHex(cview.Styles.SecondaryTextColor) + "]Info:[-]  " + info)
+			h.SetText("  [darkcyan]Info:[-]  " + slideInfo)
 		}
-
-		// Create a Flex layout that centers the logo and subtitle.
-		f := cview.NewFlex()
-		f.SetDirection(cview.FlexRow)
+		f := tview.NewFlex()
+		f.SetDirection(tview.FlexRow)
 		f.AddItem(h, 1, 1, false)
 		f.AddItem(primitive, 0, 1, true)
+		//panels.AddTab(strconv.Itoa(index), title, f)
 
-		panels.AddTab(strconv.Itoa(index), title, f)
-
-		cursor += len(title) + 4
+		pages.AddPage(strconv.Itoa(index), primitive, true, index == 0)
+		fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""] `, index+1, index, title)
 	}
-	panels.SetCurrentTab("0")
+	info.Highlight("0")
+	//panels.SetCurrentTab("0")
+
+	// Create the main layout.
+	layout := tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(info, 1, 1, false).
+		//AddItem(panels, 1, 1, false).
+		AddItem(pages, 0, 1, true)
 
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlN {
 			nextSlide()
+			return nil
 		} else if event.Key() == tcell.KeyCtrlP {
 			previousSlide()
+			return nil
 		}
 		return event
 	})
 
 	// Start the application.
-	app.SetRoot(panels, true)
-	if err := app.Run(); err != nil {
+	if err := app.SetRoot(layout, true).EnableMouse(true).EnablePaste(true).Run(); err != nil {
 		panic(err)
 	}
 }

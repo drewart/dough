@@ -11,6 +11,27 @@ import (
 	"github.com/drewart/dough/data"
 )
 
+func DollorStrToCents(dollarStr string) int {
+	ammount := 0
+	amtParts := strings.SplitN(dollarStr, ".", 2)
+	if len(amtParts) > 1 {
+		dollar, err := strconv.Atoi(amtParts[0])
+		if err != nil {
+			log.Fatalf("dollar amount parse %s %s", dollarStr, err)
+		}
+		cents, err := strconv.Atoi(amtParts[1])
+		if err != nil {
+			log.Fatalf("cents format error %s %s", dollarStr, err)
+		}
+		if dollar < 0 {
+			ammount = (dollar * 100) - cents
+		} else {
+			ammount = (dollar * 100) + cents
+		}
+	}
+	return ammount
+}
+
 // TODO change to LegerItem
 func ImportCSVToAccount(reader io.Reader) ([]data.LedgerEntry, error) {
 	var entries []data.LedgerEntry
@@ -24,7 +45,8 @@ func ImportCSVToAccount(reader io.Reader) ([]data.LedgerEntry, error) {
 	}
 
 	// Date,Transaction,Payee,Memo,Amount
-	entries = make([]data.LedgerEntry, len(rows))
+	//entries = make([]data.LedgerEntry, len(rows))
+	transformers := GetTransformers()
 
 	for _, row := range rows {
 
@@ -33,6 +55,7 @@ func ImportCSVToAccount(reader io.Reader) ([]data.LedgerEntry, error) {
 		payee := row[2]
 		memo := row[3]
 		amountStr := row[4]
+		check := ""
 
 		// skip Header
 		if date == "Date" {
@@ -43,24 +66,29 @@ func ImportCSVToAccount(reader io.Reader) ([]data.LedgerEntry, error) {
 			log.Fatalf("Date format error %s %s", date, err)
 		}
 
-		amount := 0
-		amtParts := strings.SplitN(amountStr, ".", 2)
-		if len(amtParts) > 1 {
-			dollar, err := strconv.Atoi(amtParts[0])
-			if err != nil {
-				log.Fatalf("Date format error %s %s", date, err)
-			}
-			cents, err := strconv.Atoi(amtParts[1])
-			if err != nil {
-				log.Fatalf("Date format error %s %s", date, err)
-			}
-			amount = (dollar * 100) + cents
-
+		//lower case
+		payee = strings.ToLower(payee)
+		memo = strings.ToLower(memo)
+		// CUSTOM
+		if payee == "check" {
+			check = trans
+			trans = "check"
 		}
+
+		for _, tr := range transformers.Transforms {
+			if tr.Field == "payee" {
+				payee = tr.FindReplace(payee)
+			} else if tr.Field == "memo" {
+				memo = tr.FindReplace(memo)
+			}
+		}
+
+		amount := DollorStrToCents(amountStr)
 
 		entries = append(entries, data.LedgerEntry{Date: transDate,
 			Account:   nil,
-			Check:     trans,
+			TransType: trans,
+			Check:     check,
 			Payee:     payee,
 			Memo:      memo,
 			Amount:    amount,
@@ -78,6 +106,7 @@ func ImportCatagories(reader io.Reader) {
 		log.Printf("unable to parse file as CSV for \n %s", err)
 	}
 	store := data.NewDoughStorage()
+	defer store.Close()
 	for _, row := range rows {
 		if row[0] == "id" {
 			continue
@@ -94,7 +123,7 @@ func ImportCatagories(reader io.Reader) {
 		}
 
 		tags := strings.Split(tagRaw, "|")
-		var parentCat *data.Catagory 
+		var parentCat *data.Catagory
 		if parent_id != "" {
 			p_id, err := strconv.Atoi(parent_id)
 			if err != nil {
@@ -102,17 +131,13 @@ func ImportCatagories(reader io.Reader) {
 			}
 			parentCat = data.GetCatById(p_id)
 		}
-
-		cat, err := data.NewCatagory(id, name, code, parentCat, tags, id)
+		active := true
+		cat, err := data.NewCatagory(id, name, code, parentCat, tags, id, active)
 		if err != nil {
 			log.Println(err)
 		} else {
 			store.InsertCatagory(*cat)
 		}
-
-
-		
-
 	}
 
 }

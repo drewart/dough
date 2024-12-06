@@ -46,8 +46,29 @@ func InitSchema(dbFile *string) {
 	}
 	defer db.Close()
 
-	sqlStmt := `
-	DROP TABLE IF EXISTS Account;
+	rows, err := db.Query(`select name from sqlite_master where type='table'`)
+	if err != nil {
+		log.Fatalf("error getting tablename data: %s", err)
+	}
+	var tableNames []string
+	var name string
+	for rows.Next() {
+		rows.Scan(&name)
+		tableNames = append(tableNames, name)
+	}
+	for _, n := range tableNames {
+
+		dropStmt := fmt.Sprintf("drop table %s", n)
+
+		log.Println("Running :" + dropStmt)
+
+		_, err := db.Exec(dropStmt)
+		if err != nil {
+			log.Printf("error %s", err)
+		}
+	}
+
+	sqlStmt := ` 
 	create table Account (
 		id integer not null primary key,
 		name text,
@@ -55,7 +76,6 @@ func InitSchema(dbFile *string) {
 		on_budget integer
 		);
 
-	DROP TABLE IF EXISTS Ledger;
 	create table Ledger (
 		id integer not null primary key,
 		account_id integer,
@@ -69,7 +89,6 @@ func InitSchema(dbFile *string) {
 		verified integer
 		);
 
-	DROP TABLE IF EXISTS Balance;
 	create table Balance (
 		id integer not null primary key,
 		account_id integer,
@@ -77,7 +96,6 @@ func InitSchema(dbFile *string) {
 		balance integer
 		);
 
-	DROP TABLE IF EXISTS Category;
 	create table Category (
 		id integer not null primary key,
 		name text,
@@ -88,25 +106,22 @@ func InitSchema(dbFile *string) {
 		active integer
 		);
 	
-	DROP TABLE IF EXISTS CategoryMatch;
 	create table CategoryMatch (
 		id integer 	not null primary key, 
-		cat_id integer
-		is_check integer
-		key_term text
-		terms text
-		replace text
+		cat_id integer,
+		is_check integer,
+		key_term text,
+		terms text,
+		replace text,
 		ammount_match int
-	)
+	);
 
-	DROP TABLE IF EXISTS Budget;
 	create table Budget(
 		id integer not null primary key,
-		name text
-		Created integer
+		name text,
+		created integer
 	);
 	
-	DROP TABLE IF EXISTS BudgetCategory;
 	create table BudgetCategory(
 		id integer non null primary key,
 		budget_month integer not null,
@@ -135,12 +150,11 @@ func NewDoughStorage() *DoughStorage {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 	return &DoughStorage{db: db}
 }
 
 func (d *DoughStorage) Close() {
-	//d.db.Close()
+	d.db.Close()
 }
 
 func (d *DoughStorage) InsertAccount(id int, name string) {
@@ -167,19 +181,22 @@ func (d *DoughStorage) InsertAccount(id int, name string) {
 func (d *DoughStorage) GetAccounts() []Account {
 	var accounts []Account
 
-	rows, err := d.db.Query("select id, name from Account")
+	rows, err := d.db.Query("select id, name, account_type,on_budget from Account")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var id int
-		var name string
-		err = rows.Scan(&id, &name)
+		var id, onBudgetInt int
+		var name, accountType string
+		var onBudget bool
+
+		err = rows.Scan(&id, &name, &accountType, onBudgetInt)
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			accounts = append(accounts, Account{id, name})
+			onBudget = (onBudgetInt > 0)
+			accounts = append(accounts, Account{id, name, accountType, onBudget})
 		}
 		//fmt.Println(id, name)
 	}
@@ -257,8 +274,8 @@ func (d *DoughStorage) InsertCatagory(cat Catagory) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stmt, err := tx.Prepare(`insert into Category(id, name, parent_id, code, tags, order) 
-								values(?, ?, ?, ?, ?, ? )`)
+	stmt, err := tx.Prepare(`insert into Category(id, name, parent_id, code, tags, pos, active) 
+								values(?, ?, ?, ?, ?, ?, ? )`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -271,7 +288,12 @@ func (d *DoughStorage) InsertCatagory(cat Catagory) {
 	if len(cat.Tags) > 0 {
 		tags = strings.Join(cat.Tags, "|")
 	}
-	_, err = stmt.Exec(cat.ID, cat.Name, parent_id, cat.Code, tags, cat.Order)
+
+	active := 0
+	if cat.Active {
+		active = 1
+	}
+	_, err = stmt.Exec(cat.ID, cat.Name, parent_id, cat.Code, tags, cat.Pos, active)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -279,6 +301,45 @@ func (d *DoughStorage) InsertCatagory(cat Catagory) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (d *DoughStorage) GetCategories() []*Catagory {
+	var cats []*Catagory
+
+	rows, err := d.db.Query("select id, name, parent_id, code, tags, pos, active from Category where active != 0")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id, active, parent_id, pos int
+		var name, tags, code string
+
+		err = rows.Scan(&id, &name, &parent_id, &code, &tags, &pos, &active)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			parent := GetCatById(parent_id)
+
+			tagSplit := strings.Split(tags, "|")
+
+			bActive := (active > 0)
+
+			cat, err := NewCatagory(id, name, code, parent, tagSplit, pos, bActive)
+			if err != nil {
+				log.Printf("error add cat %s", err)
+			} else {
+				cats = append(cats, cat)
+			}
+		}
+		//fmt.Println(id, name)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return cats
 }
 
 func Misc() {

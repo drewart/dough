@@ -1,49 +1,53 @@
 package main
 
-import ( 
-	"code.rocketnine.space/tslocum/cview"
+import (
+	//"code.rocketnine.space/tslocum/cview"
 	"strings"
+	"github.com/rivo/tview"
+
 )
+
 const accountData = `ID|Account|Type
 0|Us Bank Chccking|Checking
 1|Us Bank Savings|Saving
 2|Us Bank Credit Card|Credit Card
 3|Us Bank HELOC|Loan`
 
-func Accounts(nextSlide func()) (title, info string, content cview.Primitive) {
-	table := cview.NewTable()
-	table.SetFixed(1,1)
+func Accounts(nextSlide func()) (title, info string, content tview.Primitive) {
+	table := tview.NewTable()
+	table.SetFixed(1, 1)
 	table.SetBorder(true)
 	table.SetTitle("Accounts")
 	for row, line := range strings.Split(accountData, "\n") {
 		for column, cell := range strings.Split(line, "|") {
-			color := cview.Styles.PrimaryTextColor
+			color := tview.Styles.PrimaryTextColor
 			if row == 0 {
-				color = cview.Styles.SecondaryTextColor
+				color = tview.Styles.SecondaryTextColor
 			} else if column == 0 {
-				color = cview.Styles.TertiaryTextColor
+				color = tview.Styles.TertiaryTextColor
 			}
-			align := cview.AlignLeft
+			align := tview.AlignLeft
 			if row == 0 {
-				align = cview.AlignCenter
+				align = tview.AlignLeft
 			} else if column == 0 || column >= 4 {
-				align = cview.AlignRight
+				align = tview.AlignRight
 			}
-			tableCell := cview.NewTableCell(cell)
+			tableCell := tview.NewTableCell(cell)
 			tableCell.SetTextColor(color)
 			tableCell.SetAlign(align)
 			tableCell.SetSelectable(row != 0 && column != 0)
-			if column >= 1 && column <= 3 {
-				tableCell.SetExpansion(1)
-			}
+			//if column >= 1 && column <= 3 {
+			//	tableCell.SetExpansion(1)
+			//}
 			table.SetCell(row, column, tableCell)
 		}
-
 	}
 
-	flex := cview.NewFlex()
-	flex.SetDirection(cview.FlexRow)
-	flex.AddItem(table,0, 1, true)
+	flex := tview.NewFlex()
+	flex.SetDirection(tview.FlexRow)
+	table.SetSelectable(true, false)
+	table.SetSeparator(' ')
+	flex.AddItem(table, 0, 1, true)
 
 	return "Accounts", "", flex
 	// data pull data

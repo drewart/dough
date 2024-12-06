@@ -5,6 +5,8 @@ import "time"
 type Account struct {
 	ID int
 	Name string
+	AccountType string
+	OnBudget bool
 }
 
 

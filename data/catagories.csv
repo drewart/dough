@@ -15,7 +15,7 @@ id,code,category,parent_id,tags
 14,R,Restaurants,12,food|extra
 15,MED,Medical,12,health
 16,CO,Clothing,12,living|
-17,HO,Household Goods,13,living|stuff|extra
+17,H,Household Goods,13,living|stuff|extra
 18,MIS,Misc,13,stuff
 19,CF,Coffee,13,living|extra
 20,ENT,Entertainment,13,living|extra
@@ -24,7 +24,7 @@ id,code,category,parent_id,tags
 23,GG,Garbage,13,house|living
 24,RD,Rainy Day,0,save|future|plan
 25,EF,Emergency Fund,24,save
-26,CR,Car Repair,24,car
+26,RC,Car Repair,24,car
 27,HM,Home Maintenance,24,home|fix
 28,CI,Car Insurance,24,car|living
 29,I,Insurance Health/Life,24,health|future
@@ -39,3 +39,4 @@ id,code,category,parent_id,tags
 38,CP,Car Payment,37,car|loan|debt
 39,LP,Loan Payment,37,loan|debt
 40,CC,Credit Card,37,loan|debt
+41,$,Income,0,pay|income

@@ -3,25 +3,27 @@ package main
 import (
 	"log"
 
-	"code.rocketnine.space/tslocum/cview"
+	//"code.rocketnine.space/tslocum/tview"
 	"github.com/drewart/dough/data"
+	"github.com/rivo/tview"
 )
 
 const form = `[green]Accounts:
 [white] Checking| Savings
 `
 
-var accountForm *cview.Form
+var accountForm *tview.Form
 
 // Form demonstrates forms.
-func Form(nextSlide func()) (title string, info string, content cview.Primitive) {
+func Form(nextSlide func()) (title string, info string, content tview.Primitive) {
 
-	accountForm = cview.NewForm()
+	accountForm = tview.NewForm()
 	accountForm.AddInputField("Account:", "", 30, nil, nil)
-	accountForm.AddDropDownSimple("Type:", 0, nil, "Checking", "Savings", "Credit", "Loan")
-	accountForm.AddCheckBox("Budget:", "On Budget", false, nil)
+	accountForm.AddDropDown("Type:", []string{"Checking", "Savings", "Credit", "Loan"}, 0, nil)
+	//accountForm.AddDropDownSimple("Type:", 0, nil, )
+	accountForm.AddCheckbox("Budget:", true, nil)
 
-	modal := cview.NewModal()
+	modal := tview.NewModal()
 	modal.SetText("Saved!")
 	modal.AddButtons([]string{"Add Another?", "Done"})
 	modal.SetDoneFunc(func(buttonIndex int, buttonLable string) {
@@ -31,7 +33,7 @@ func Form(nextSlide func()) (title string, info string, content cview.Primitive)
 			nextSlide()
 		}
 	})
-	modal.SetVisible(false)
+	//modal.Set
 
 	if modal != nil {
 		log.Println("model not nil")
@@ -44,17 +46,17 @@ func Form(nextSlide func()) (title string, info string, content cview.Primitive)
 		for i := 0; i < itemsCount; i++ {
 			formItem := accountForm.GetFormItem(i)
 			if formItem.GetLabel() == "Account:" {
-				inputField := formItem.(*cview.InputField)
+				inputField := formItem.(*tview.InputField)
 				if inputField.GetLabel() == "Account:" {
 					accountName = inputField.GetText()
 					log.Printf("Account name saved %s", accountName)
 				}
 			} else if formItem.GetLabel() == "Type:" {
-				op := formItem.(*cview.DropDown)
+				op := formItem.(*tview.DropDown)
 				i, opt := op.GetCurrentOption()
-				log.Printf("%d %s", i, opt.GetText())
+				log.Printf("%d %s", i, opt)
 			} else if formItem.GetLabel() == "Budget:" {
-				b := formItem.(*cview.CheckBox)
+				b := formItem.(*tview.Checkbox)
 				log.Printf("is budget %s", b.IsChecked())
 			}
 		}
@@ -66,9 +68,7 @@ func Form(nextSlide func()) (title string, info string, content cview.Primitive)
 			id = id + 1
 		}
 		storage.InsertAccount(id, accountName)
-
-		modal.SetVisible(true)
-
+		//modal.SetVisible(true)
 	}
 
 	accountForm.AddButton("Save", onSave)

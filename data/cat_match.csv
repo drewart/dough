@@ -1,0 +1,9 @@
+name,cat_code,IsCheck,KeyTerm,Terms,Replace,Amount
+qfc,EG,false,qfc,,,QFC,*
+amazon,H,false,amazon,mktpl|amzn,Amazon,*
+chase,MM,false,jpmorgan,chase,JPMorgan Chase,*
+church_tithe,T,true,check,check,Northshore Church,-200
+church_great,T,true,check,check,Northshore Church,-245
+starbucks_pay,$,false,starbucks,deposit|corp,Starbucks,>0
+AMZNFreeTime,SS,false,AMZNFreeTime,,Amazon Freetime,*
+paypal_0,SS,false,paypal,,Paypal TODO,-79.33

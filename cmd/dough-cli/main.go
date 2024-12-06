@@ -50,6 +50,8 @@ func main() {
 		defer f.Close()
 
 		util.ImportCatagories(f)
+	} else if action == "build-match-import" {
+		// import and build cat match
 	}
 
 }

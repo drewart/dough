@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"code.rocketnine.space/tslocum/cview"
+	//"code.rocketnine.space/tslocum/tview"
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
 const tableData = `OrderDate|Region|Rep|Item|Units|UnitCost|Total
@@ -53,99 +54,280 @@ const tableData = `OrderDate|Region|Rep|Item|Units|UnitCost|Total
 12/4/2018|Central|Jardine|Binder|94|19.99|1,879.06
 12/21/2018|Central|Andrews|Binder|28|4.99|139.72`
 
-const tableBasic = `[purple]basic`
+const tableBasic = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white])
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:  [red]"..."[white],
+                    Color: color,
+                    Align: align,
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
-const tableSeparator = `[yellow]separator`
+const tableSeparator = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white]).
+        [yellow]SetSeparator[white](Borders.Vertical)
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:  [red]"..."[white],
+                    Color: color,
+                    Align: align,
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
-const tableBorders = `[black]borders`
+const tableBorders = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white]).
+        [yellow]SetBorders[white](true)
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:  [red]"..."[white],
+                    Color: color,
+                    Align: align,
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
-const tableSelectRow = `[green]selectrow`
+const tableSelectRow = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white]).
+        [yellow]SetSelectable[white](true, false)
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:          [red]"..."[white],
+                    Color:         color,
+                    Align:         align,
+                    NotSelectable: row == [red]0[white] || column == [red]0[white],
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
-const tableSelectColumn = `[blue]column`
+const tableSelectColumn = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white]).
+        [yellow]SetSelectable[white](false, true)
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:          [red]"..."[white],
+                    Color:         color,
+                    Align:         align,
+                    NotSelectable: row == [red]0[white] || column == [red]0[white],
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
-const tableSelectCell = `[red]selectcell`
+const tableSelectCell = `[green]func[white] [yellow]main[white]() {
+    table := tview.[yellow]NewTable[white]().
+        [yellow]SetFixed[white]([red]1[white], [red]1[white]).
+        [yellow]SetSelectable[white](true, true)
+    [yellow]for[white] row := [red]0[white]; row < [red]40[white]; row++ {
+        [yellow]for[white] column := [red]0[white]; column < [red]7[white]; column++ {
+            color := tcell.ColorWhite
+            [yellow]if[white] row == [red]0[white] {
+                color = tcell.ColorYellow
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            [yellow]if[white] row == [red]0[white] {
+                align = tview.AlignCenter
+            } [yellow]else[white] [yellow]if[white] column == [red]0[white] || column >= [red]4[white] {
+                align = tview.AlignRight
+            }
+            table.[yellow]SetCell[white](row,
+                column,
+                &tview.TableCell{
+                    Text:          [red]"..."[white],
+                    Color:         color,
+                    Align:         align,
+                    NotSelectable: row == [red]0[white] || column == [red]0[white],
+                })
+        }
+    }
+    tview.[yellow]NewApplication[white]().
+        [yellow]SetRoot[white](table, true).
+        [yellow]Run[white]()
+}`
 
 // Table demonstrates the Table.
-func Table(nextSlide func()) (title string, info string, content cview.Primitive) {
-	table := cview.NewTable()
-	table.SetFixed(1, 1)
+func Table(nextSlide func()) (title string, info string, content tview.Primitive) {
+	table := tview.NewTable().
+		SetFixed(1, 1)
 	for row, line := range strings.Split(tableData, "\n") {
 		for column, cell := range strings.Split(line, "|") {
-			color := cview.Styles.PrimaryTextColor
+			color := tcell.ColorWhite
 			if row == 0 {
-				color = cview.Styles.SecondaryTextColor
+				color = tcell.ColorYellow
 			} else if column == 0 {
-				color = cview.Styles.TertiaryTextColor
+				color = tcell.ColorDarkCyan
 			}
-			align := cview.AlignLeft
+			align := tview.AlignLeft
 			if row == 0 {
-				align = cview.AlignCenter
+				align = tview.AlignCenter
 			} else if column == 0 || column >= 4 {
-				align = cview.AlignRight
+				align = tview.AlignRight
 			}
-			tableCell := cview.NewTableCell(cell)
-			tableCell.SetTextColor(color)
-			tableCell.SetAlign(align)
-			tableCell.SetSelectable(row != 0 && column != 0)
+			tableCell := tview.NewTableCell(cell).
+				SetTextColor(color).
+				SetAlign(align).
+				SetSelectable(row != 0 && column != 0)
 			if column >= 1 && column <= 3 {
 				tableCell.SetExpansion(1)
 			}
 			table.SetCell(row, column, tableCell)
 		}
 	}
-	table.SetBorder(true)
-	table.SetTitle("Table")
+	table.SetBorder(true).SetTitle("Table")
 
-	code := cview.NewTextView()
-	code.SetWrap(false)
-	code.SetDynamicColors(true)
-	code.SetPadding(1, 1, 2, 0)
+	code := tview.NewTextView().
+		SetWrap(false).
+		SetDynamicColors(true)
+	code.SetBorderPadding(1, 1, 2, 0)
 
-	list := cview.NewList()
+	list := tview.NewList()
 
 	basic := func() {
-		table.SetBorders(false)
-		table.SetSelectable(false, false)
-		table.SetSeparator(' ')
+		table.SetBorders(false).
+			SetSelectable(false, false).
+			SetSeparator(' ')
 		code.Clear()
 		fmt.Fprint(code, tableBasic)
 	}
 
 	separator := func() {
-		table.SetBorders(false)
-		table.SetSelectable(false, false)
-		table.SetSeparator(cview.Borders.Vertical)
+		table.SetBorders(false).
+			SetSelectable(false, false).
+			SetSeparator(tview.Borders.Vertical)
 		code.Clear()
 		fmt.Fprint(code, tableSeparator)
 	}
 
 	borders := func() {
-		table.SetBorders(true)
-		table.SetSelectable(false, false)
+		table.SetBorders(true).
+			SetSelectable(false, false)
 		code.Clear()
 		fmt.Fprint(code, tableBorders)
 	}
 
 	selectRow := func() {
-		table.SetBorders(false)
-		table.SetSelectable(true, false)
-		table.SetSeparator(' ')
+		table.SetBorders(false).
+			SetSelectable(true, false).
+			SetSeparator(' ')
 		code.Clear()
 		fmt.Fprint(code, tableSelectRow)
 	}
 
 	selectColumn := func() {
-		table.SetBorders(false)
-		table.SetSelectable(false, true)
-		table.SetSeparator(' ')
+		table.SetBorders(false).
+			SetSelectable(false, true).
+			SetSeparator(' ')
 		code.Clear()
 		fmt.Fprint(code, tableSelectColumn)
 	}
 
 	selectCell := func() {
-		table.SetBorders(false)
-		table.SetSelectable(true, true)
-		table.SetSeparator(' ')
+		table.SetBorders(false).
+			SetSelectable(true, true).
+			SetSeparator(' ')
 		code.Clear()
 		fmt.Fprint(code, tableSelectCell)
 	}
@@ -154,47 +336,28 @@ func Table(nextSlide func()) (title string, info string, content cview.Primitive
 		app.SetFocus(table)
 		table.SetDoneFunc(func(key tcell.Key) {
 			app.SetFocus(list)
-		})
-		table.SetSelectedFunc(func(row int, column int) {
+		}).SetSelectedFunc(func(row int, column int) {
 			app.SetFocus(list)
 		})
 	}
 
-	list.ShowSecondaryText(false)
-	list.SetPadding(1, 1, 2, 2)
-
-	var demoTableText = []struct {
-		text     string
-		shortcut rune
-		selected func()
-	}{
-		{"Basic table", 'b', basic},
-		{"Table with separator", 's', separator},
-		{"Table with borders", 'o', borders},
-		{"Selectable rows", 'r', selectRow},
-		{"Selectable columns", 'c', selectColumn},
-		{"Selectable cells", 'l', selectCell},
-		{"Navigate", 'n', navigate},
-		{"Next slide", 'x', nextSlide},
-	}
-
-	for _, tableText := range demoTableText {
-		item := cview.NewListItem(tableText.text)
-		item.SetShortcut(tableText.shortcut)
-		item.SetSelectedFunc(tableText.selected)
-		list.AddItem(item)
-	}
+	list.ShowSecondaryText(false).
+		AddItem("Basic table", "", 'b', basic).
+		AddItem("Table with separator", "", 's', separator).
+		AddItem("Table with borders", "", 'o', borders).
+		AddItem("Selectable rows", "", 'r', selectRow).
+		AddItem("Selectable columns", "", 'c', selectColumn).
+		AddItem("Selectable cells", "", 'l', selectCell).
+		AddItem("Navigate", "", 'n', navigate).
+		AddItem("Next slide", "", 'x', nextSlide)
+	list.SetBorderPadding(1, 1, 2, 2)
 
 	basic()
 
-	subFlex := cview.NewFlex()
-	subFlex.SetDirection(cview.FlexRow)
-	subFlex.AddItem(list, 10, 1, true)
-	subFlex.AddItem(table, 0, 1, false)
-
-	flex := cview.NewFlex()
-	flex.AddItem(subFlex, 0, 1, true)
-	flex.AddItem(code, codeWidth, 1, false)
-
-	return "Table", "", flex
+	return "Table", sliderInfo, tview.NewFlex().
+		AddItem(tview.NewFlex().
+			SetDirection(tview.FlexRow).
+			AddItem(list, 10, 1, true).
+			AddItem(table, 0, 1, false), 0, 1, true).
+		AddItem(code, codeWidth, 1, false)
 }

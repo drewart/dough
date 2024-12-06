@@ -1,0 +1,19 @@
+tranforms:
+- name: debit visa
+  field: payee
+  regex: /^debit purchase -visa//
+- name: debit
+  field: payee
+  regex: /^debit purchase//
+- name: elecwd
+  field: payee
+  regex: /^electronic withdrawal//
+- name: web
+  field: payee
+  regex: /^web authorized pmt//
+- name: recurring
+  field: payee
+  regex: /^recurring debit purchase//
+- name: download
+  field: memo
+  regex: /^download from usbank.com//
