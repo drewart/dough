@@ -106,6 +106,14 @@ func main() {
 		info.Highlight(strconv.Itoa(slide)).
 			ScrollToHighlight()
 	}
+	intSlide := func(i int) {
+		slide, _ := strconv.Atoi(info.GetHighlights()[0])
+		slide = (i) % len(slides)
+		//panels.SetCurrentTab(strconv.Itoa(slide))
+		info.Highlight(strconv.Itoa(slide)).
+			ScrollToHighlight()
+	}
+
 	for index, slide := range slides {
 		title, slideInfo, primitive := slide(nextSlide)
 		h := tview.NewTextView()
@@ -140,6 +148,10 @@ func main() {
 		} else if event.Key() == tcell.KeyCtrlP {
 			previousSlide()
 			return nil
+		} else if event.Key() == tcell.KeyCtrlA {
+			intSlide(0)
+		} else if event.Key() == tcell.KeyCtrlB {
+			intSlide(1)
 		}
 		return event
 	})
